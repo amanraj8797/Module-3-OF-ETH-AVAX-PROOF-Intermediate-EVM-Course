@@ -1,0 +1,35 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.26;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+// Contract ISRO inherits all the properties of ERC20 
+contract ISRO is ERC20 {
+    address public director;
+
+    // Token name is SpaceToken and symbol is ST
+    constructor(uint256 initialSupply) ERC20("SpaceToken", "ST") {
+        _mint(msg.sender, initialSupply);
+        director = msg.sender;
+    }
+
+    modifier onlyDirector() {
+        require(msg.sender == director, "You are not the ISRO Director");
+        _;
+    }
+
+    // Only ISRO Director can mint tokens at __receiver address
+    function mint(address _receiver, uint256 _amount) external onlyDirector {
+        _mint(_receiver, _amount);
+    }
+
+    // Burn tokens _from a specified address
+    function burn(address _from, uint256 _amount) external {
+        _burn(_from, _amount);
+    }
+
+    function transfer(address _receiver, uint256 _amount) public override returns (bool) {
+        _transfer(msg.sender, _receiver, _amount);
+        return true;
+    }
+}
